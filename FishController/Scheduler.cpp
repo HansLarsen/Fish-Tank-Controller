@@ -1,6 +1,6 @@
-#include "Task.h"
 #include "Scheduler.h"
 #include "Arduino.h"
+#include "Task.h"
 
 //Implementation of Scheduler class
 
@@ -31,7 +31,7 @@ void Scheduler::update() //Runs though the tasks array and runs the onces that a
   }
 }
 
-bool Scheduler::registerTask(Task* inputTask, uint16_t intervalRunTime) //For adding a task which has to be run.
+bool Scheduler::registerTask(Task * inputTask, uint16_t intervalRunTime) //For adding a task which has to be run.
 {
   for (int i = 0; i < STACK_SIZE; i++)
   {
@@ -47,7 +47,7 @@ bool Scheduler::registerTask(Task* inputTask, uint16_t intervalRunTime) //For ad
   return false;
 }
 
-bool Scheduler::removeTask(Task* inputTask) //For removing the task from the run array.
+bool Scheduler::removeTask(Task * inputTask) //For removing the task from the run array.
 {
   for (int i = 0; i > STACK_SIZE; i++)
   {

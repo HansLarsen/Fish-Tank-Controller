@@ -9,9 +9,13 @@
 class Blinker : public Task
 {
 public:
-  Blinker() {return;};
+  Blinker();
   Blinker(uint8_t);
-  virtual bool run(); //Overriding run method from TimedTask
+  virtual void dateRun()
+  {
+    return;
+  }
+  virtual void run() override; //Overriding run method from Task
 
 private:
   uint8_t pin;

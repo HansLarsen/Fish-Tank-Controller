@@ -1,36 +1,34 @@
 #include "Scheduler.h"    //Scheduler class which runs tasks
+#include "SchedulerDate.h"
 #include "Blinker.h"  //Derived from TimedTask, blinks an LED
-#include "Fader.h"  //Derived from TimedTask, fades an LED up and down
-#include "Talker.h" //For transmittion data to the master.
-#include "IMUAngle.h" //Retriving the angle of the IMU.
-#include "WheelLight.h"
+#include <Wire.h>
+#include "RefillProgram.h"
 
 
 Scheduler *taskManager;  // Creating a taskManager to run things at times
+SchedulerDate *rtcManager; 
 Blinker *blink;   // A led blinker on pin 13
-Fader *fader; // Making a fader object which increments 20 at a time on pin 9
-IMUAngle *angler; //Measures the angle from the IMU.
-Transmitter *MhzTrans;
-WheelLight *WheelLights;
+Blinker *blinker;
+RefillProgram *refillProgram;
 
 void setup() {
   Serial.begin(9600);
-  while(!Serial)
-  {
-    delay(1);
-  }
+  
+  Wire.begin();
+
   Serial.println("Begin");
   
   taskManager = new Scheduler();
-  blink = new Blinker(13);
-  angler = new IMUAngle();
-  MhzTrans = new Transmitter(angler);
-  WheelLights = new WheelLight(MhzTrans);
+  rtcManager = new SchedulerDate();
+  blink = new Blinker(2);
+  blinker = new Blinker();
+  refillProgram = new RefillProgram(26, 27, 31, 33, 32, 34, 6, 7, 8, 9, 37, 38, true);
 
-  taskManager->registerTask(blink, 1500); //Adds the blinker class which runs ever 2 second
-  taskManager->registerTask(angler, 1000);
-  taskManager->registerTask(MhzTrans, 1000);
-  taskManager->registerTask(WheelLights, 1000);
+  taskManager->registerTask(blink, 1000); //Adds the blinker class which runs ever 2 second
+  taskManager->registerTask(blinker, 1000);
+  taskManager->registerTask(rtcManager, 5000);
+
+  rtcManager->registerTask(refillProgram, 13, 1);
 }
 
 void loop() {

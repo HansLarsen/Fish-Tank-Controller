@@ -1,18 +1,11 @@
-
 #ifndef TASK_H
 #define TASK_H
 
 class Task
 {
 public:
-  Task()
-  {
-    return;
-  }
-  virtual bool run()
-  {
-    return true;
-  };
+    virtual void run();
+    virtual void dateRun();
 };
 
 #endif
