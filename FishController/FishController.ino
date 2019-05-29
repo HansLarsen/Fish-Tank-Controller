@@ -22,11 +22,14 @@ void setup() {
   rtcManager = new SchedulerDate();
   blink = new Blinker(2);
   blinker = new Blinker();
-  refillProgram = new RefillProgram(26, 27, 31, 33, 32, 34, 6, 7, 8, 9, 37, 38, true);
+  refillProgram = new RefillProgram(26, 27, 31, 33, 32, 34, 6, 7, 8, 9, 37, 38, false); 
+  /* drainPin, refillPin, topFloatPin, toppestFloatPin,buttomFloatPin,buttomestFloatPin,indFillLED,indDrainLED,indAboveFull,indBelowBottom,
+  buttonTopUp,buttonWaterChange, flipButtons = false*/
 
   taskManager->registerTask(blink, 1000); //Adds the blinker class which runs ever 2 second
   taskManager->registerTask(blinker, 1000);
   taskManager->registerTask(rtcManager, 5000);
+  taskManager->registerTask(refillProgram, 10);
 
   rtcManager->registerTask(refillProgram, 13, 1);
 }

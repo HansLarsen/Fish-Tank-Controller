@@ -18,18 +18,33 @@ RefillProgram::RefillProgram(
 )
 {
     drainPin = _drainPin;
+    pinMode(drainPin, OUTPUT);
     refillPin = _refillPin;
+    pinMode(refillPin, OUTPUT);
     topFloatPin = _topFloatPin;
+    pinMode(topFloatPin, INPUT);
     toppestFloatPin = _toppestFloatPin;
+    pinMode(toppestFloatPin, INPUT);
     buttomFloatPin = _buttomFloatPin;
+    pinMode(buttomFloatPin, INPUT);
     buttomestFloatPin = _buttomestFloatPin;
+    pinMode(buttomestFloatPin, INPUT);
     indFillLED = _indFillLED;
+    pinMode(indFillLED, OUTPUT);
     indDrainLED = _indDrainLED;
+    pinMode(indDrainLED, OUTPUT);
     indAboveFull = _indAboveFull;
+    pinMode(indAboveFull, OUTPUT);
     indBelowBottom = _indBelowBottom;
+    pinMode(indBelowBottom, OUTPUT);
     buttonTopUp = _buttonTopUp;
+    pinMode(buttonTopUp, INPUT);
     buttonWaterChange = _buttonWaterChange;
+    pinMode(buttonWaterChange, INPUT);
     flipButtons = _flipButtons;
+
+    digitalWrite(drainPin, HIGH);
+    digitalWrite(refillPin, HIGH);
 }
 
 void RefillProgram::run(){
@@ -46,25 +61,31 @@ void RefillProgram::buttonCheckerTopUp(int time)
         buttonState = !buttonState;
     }
 
-    if (buttonState && time - buttonTime >= 100 && smallFillTime == 0)
+    if (topButtonDebounce == nullptr && buttonState)
     {
+        topButtonDebounce = new Button(time, 100);
+    }
+    else if (topButtonDebounce->canRun(time) && topButtonDebounce != nullptr && buttonState && smallFillTime == 0 && !smallFillIsActive) //Start filling
+    {
+        delete topButtonDebounce;
+        topButtonDebounce = nullptr;
+
         smallFillTime = time;
         smallFillIsActive = true;
         digitalWrite(refillPin, LOW);
         digitalWrite(indFillLED, HIGH);
     }
-    else if (buttonState && smallFillTime == 0)
+    else if (topButtonDebounce->canRun(time) && buttonState == false)
     {
-        buttonTime = time;
+        delete topButtonDebounce;
+        topButtonDebounce = nullptr;
     }
-    else if (smallFillIsActive && time - smallFillTime >= SMALLFILLTIMER)
+    else if (smallFillIsActive && time - smallFillTime >= SMALLFILLTIMER) //Stop filling
     {
         digitalWrite(refillPin, HIGH);
         digitalWrite(indFillLED, LOW);
-    }
-    else if (time - buttonTime > 100)
-    {
-        buttonTime = 0;
+        smallFillTime = 0;
+        smallFillIsActive = false;
     }
 }
 void RefillProgram::buttonCheckerCycle(int time)
@@ -78,19 +99,30 @@ void RefillProgram::buttonCheckerCycle(int time)
         buttonState = !buttonState;
     }
 
-    if (buttonState && time - buttonTime2 >= 100 && smallFillTime == 0)
+    if (bottomButtonDebounce == nullptr && buttonState)
     {
+        bottomButtonDebounce = new Button(time, 100);
+    }
+    else if (bottomButtonDebounce->canRun(time) && bottomButtonDebounce != nullptr && buttonState) //Start filling
+    {
+        delete bottomButtonDebounce;
+        bottomButtonDebounce = nullptr;
+
+
+        Serial.println("Activating Superpowers");
         refillIsActive = true;
     }
-    else
+    else if (bottomButtonDebounce->canRun(time) && buttonState == false)
     {
-        buttonTime2 = 0;
+        delete bottomButtonDebounce;
+        bottomButtonDebounce = nullptr;
     }
 
     if(refillIsActive)
     {
         if (goingUp)
         {
+            Serial.println("Going Up");
             if (topFloatStatus == HIGH)
             {
                 goingUp = false;
@@ -136,6 +168,7 @@ void RefillProgram::emergencyChecker()
         digitalWrite(drainPin, HIGH);
         digitalWrite(indDrainLED, LOW);
         digitalWrite(indBelowBottom, HIGH);
+        Serial.println("BottomFloat");
     }
     else
     {
@@ -147,6 +180,7 @@ void RefillProgram::emergencyChecker()
         digitalWrite(refillPin, HIGH);
         digitalWrite(indFillLED, LOW);
         digitalWrite(indAboveFull, HIGH);
+        Serial.println("TopFloat");
     }
     else
     {

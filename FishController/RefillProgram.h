@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include "Task.h"
+#include "button.h"
 
 class RefillProgram : public Task
 {
@@ -49,6 +50,9 @@ protected:
 
     int buttonTime = 0;
     int buttonTime2 = 0;
+
+    Button* topButtonDebounce = nullptr;
+    Button* bottomButtonDebounce = nullptr; 
 
     bool goingUp = false;
     int smallFillTime = 0;
