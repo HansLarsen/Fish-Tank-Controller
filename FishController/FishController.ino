@@ -31,7 +31,7 @@ void setup() {
   taskManager->registerTask(rtcManager, 5000);
   taskManager->registerTask(refillProgram, 10);
 
-  rtcManager->registerTask(refillProgram, 13, 1);
+  rtcManager->registerTask(refillProgram, 9, 1);
 }
 
 void loop() {

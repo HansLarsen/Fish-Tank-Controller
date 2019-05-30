@@ -51,6 +51,7 @@ void RefillProgram::run(){
     int now = millis();
     buttonCheckerTopUp(now);
     buttonCheckerCycle(now);
+    emergencyChecker();
 }
 
 void RefillProgram::buttonCheckerTopUp(int time)
@@ -122,7 +123,6 @@ void RefillProgram::buttonCheckerCycle(int time)
     {
         if (goingUp)
         {
-            Serial.println("Going Up");
             if (topFloatStatus == HIGH)
             {
                 goingUp = false;
@@ -168,7 +168,7 @@ void RefillProgram::emergencyChecker()
         digitalWrite(drainPin, HIGH);
         digitalWrite(indDrainLED, LOW);
         digitalWrite(indBelowBottom, HIGH);
-        Serial.println("BottomFloat");
+        Serial.println("Below buttom float");
     }
     else
     {
@@ -180,7 +180,7 @@ void RefillProgram::emergencyChecker()
         digitalWrite(refillPin, HIGH);
         digitalWrite(indFillLED, LOW);
         digitalWrite(indAboveFull, HIGH);
-        Serial.println("TopFloat");
+        Serial.println("Above top float");
     }
     else
     {
