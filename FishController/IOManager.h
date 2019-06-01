@@ -66,6 +66,7 @@ public:
     void dayLight(bool);
     void nightLight(bool);
 
+    void setAirpump();
     void setAirpump(bool);
 
     virtual void run() override;

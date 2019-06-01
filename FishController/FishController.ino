@@ -6,6 +6,7 @@
 #include "RefillProgram.h"
 #include "IOManager.h"
 #include "LightManager.h"
+#include "AirpumpManager.h"
 
 
 Scheduler *taskManager;  // Creating a taskManager to run things at times
@@ -15,6 +16,8 @@ Blinker *blinker;
 RefillProgram *refillProgram;
 IOManager *inputOutput;
 LightManager *LightManagerMain;
+AirpumpManager *AirpumpManagerMain;
+
 
 void setup() {
   Serial.begin(9600);
@@ -30,6 +33,7 @@ void setup() {
   inputOutput = new IOManager();
   refillProgram = new RefillProgram(inputOutput);
   LightManagerMain = new LightManager(inputOutput);
+  AirpumpManagerMain = new AirpumpManager(inputOutput);
 
   taskManager->registerTask(blink, 1000); //Adds the blinker class which runs ever 2 second
   taskManager->registerTask(blinker, 1000);
@@ -39,6 +43,7 @@ void setup() {
 
   rtcManager->registerTask(refillProgram, 9, 1);
   rtcManager->registerTask(LightManagerMain, 1, 0);
+  rtcManager->registerTask(AirpumpManagerMain, 1, 0);
 }
 
 void loop() {

@@ -237,6 +237,11 @@ void IOManager::nightLight(bool currentNightState)
     nightLightState = currentNightState;
 }
 
+void IOManager::setAirpump()
+{
+    airPumpStatus = !airPumpStatus;
+}
+
 void IOManager::setAirpump(bool currentAirpumpState)
 {
     airPumpStatus = currentAirpumpState;
