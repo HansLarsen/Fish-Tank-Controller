@@ -34,7 +34,7 @@ void SchedulerDate::update() //Runs though the tasks array and runs the onces th
         {
           Task * tempTask = tasks[i];
           Serial.println("Task Registered for " + String(ratesHourTasks[i]));
-          tempTask->dateRun();
+          tempTask->dateRun(now.hour());
           lastRunHour[i] = now.hour();
           lastRunDate[i] = now.day();
         }

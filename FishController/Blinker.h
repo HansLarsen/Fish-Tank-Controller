@@ -11,7 +11,7 @@ class Blinker : public Task
 public:
   Blinker();
   Blinker(uint8_t);
-  virtual void dateRun()
+  virtual void dateRun(int)
   {
     return;
   }

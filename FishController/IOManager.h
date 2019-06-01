@@ -8,7 +8,7 @@
 #define DebounceTime 100
 
 //Solenoids
-#define flipSolenoids false
+#define flipSolenoids true
 #define DrainPin 26
 #define RefillPin 26
 
@@ -25,11 +25,26 @@
 #define indDrainLED 7 
 #define indAboveFull 8
 #define indBelowBottom 9
+#define indDayLight 4
+#define indNightLight 5
+#define indAirPump 3
 
 //Buttons
 #define flipButtons true
 #define buttonTopUp 37
 #define buttonWaterChange 38
+#define lightOnButton 40
+#define lightOffButton 39
+
+//Lights
+#define flipLight false
+#define dayLights 24
+#define nightLights 25
+
+//Airpump
+#define flipAirpump false
+#define AirPump 23
+
 
 typedef ButtonReturnClass * funPoint;
 
@@ -48,14 +63,20 @@ public:
     bool fillStatus();
     bool drainStatus();
 
+    void dayLight(bool);
+    void nightLight(bool);
+
+    void setAirpump(bool);
+
     virtual void run() override;
-    virtual void dateRun() override;
+    virtual void dateRun(int) override;
 
     bool topFloatStateOld = LOW;
     bool bottomFloatStateOld = HIGH;
     
 protected:
     int buttonTimer = 0;
+    int buttonTimer2 = 0;
 
     //0 is TopUp, 1 is WaterChange
     funPoint ButtonArray[TaskListSize];
@@ -64,6 +85,11 @@ protected:
     //High off, LOW on;
     bool fillState = HIGH;
     bool drainState = HIGH;
+
+    bool dayLightState = HIGH;
+    bool nightLightState = LOW;
+
+    bool airPumpStatus = HIGH;
 };
 
 #endif

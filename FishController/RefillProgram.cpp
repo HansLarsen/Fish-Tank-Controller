@@ -33,7 +33,7 @@ void RefillProgram::run()
 
 }
 
-void RefillProgram::dateRun()
+void RefillProgram::dateRun(int hour)
 {
     refillIsActive = true;
     managerPointer->drain(true);

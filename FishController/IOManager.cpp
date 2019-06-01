@@ -9,9 +9,13 @@ IOManager::IOManager()
     pinMode(indDrainLED, OUTPUT);
     pinMode(indAboveFull, OUTPUT);
     pinMode(indBelowBottom, OUTPUT);
+    pinMode(indDayLight, OUTPUT);
+    pinMode(indNightLight, OUTPUT);
 
     pinMode(buttonTopUp, INPUT);
     pinMode(buttonWaterChange, INPUT);
+    pinMode(lightOnButton, INPUT);
+    pinMode(lightOffButton, INPUT);
 
     pinMode(topFloatPin, INPUT);
     pinMode(toppestFloatPin, INPUT);
@@ -109,21 +113,32 @@ void IOManager::run()
     #if flipLEDS
         digitalWrite(indDrainLED, !drainState);
         digitalWrite(indFillLED, !fillState);
+        digitalWrite(indDayLight, !dayLightState);
+        digitalWrite(indNightLight, !nightLightState);
+        digitalWrite(indAirPump, !airPumpStatus):
     #else
         digitalWrite(indDrainLED, drainState);
         digitalWrite(indFillLED, fillState);
+        digitalWrite(indDayLight, dayLightState);
+        digitalWrite(indNightLight, nightLightState);
+        digitalWrite(indAirPump, airPumpStatus);
     #endif
 
     //Debouncing.
     bool TopUpButton = digitalRead(buttonTopUp);
     bool WaterChangeButton = digitalRead(buttonWaterChange);
+    bool LightOnButton = digitalRead(lightOnButton);
+    bool LightOffButton = digitalRead(lightOffButton);
 
     #if flipButtons
         TopUpButton = !TopUpButton;
         WaterChangeButton = !WaterChangeButton;
+        LightOnButton = !LightOnButton;
+        LightOffButton = !LightOffButton;
     #endif
 
     int timeNow = millis();
+    //Water Change Buttons
     if (buttonTimer == 0)
     {
         if (TopUpButton || WaterChangeButton)
@@ -146,9 +161,46 @@ void IOManager::run()
             }
         }
     }
+
+    //DayLight Buttons
+    if (buttonTimer2 == 0)
+    {
+        if (LightOnButton || LightOffButton)
+        {
+            buttonTimer2 = timeNow;
+        }
+    }
+    else if( (LightOnButton || LightOffButton) && timeNow - buttonTimer2 >= DebounceTime)
+    {
+        buttonTimer2 = 0;
+        if (LightOnButton)
+        {
+            dayLightState = !dayLightState;
+        }
+        else if (LightOffButton)
+        {
+            nightLightState = !nightLightState;
+        }
+    }
+
+    //DayNightLight
+    #if flipLight
+        digitalWrite(dayLights, !dayLightState);
+        digitalWrite(nightLights, !nightLightState);
+    #else
+        digitalWrite(dayLights, dayLightState);
+        digitalWrite(nightLights, nightLightState);
+    #endif
+
+    //Airpump
+    #if flipAirpump
+        digitalWrite(AirPump, !airPumpStatus);
+    #else
+        digitalWrite(AirPump, airPumpStatus)
+    #endif
 }
 
-void IOManager::dateRun()
+void IOManager::dateRun(int)
 {
     return;
 }
@@ -173,4 +225,19 @@ void IOManager::fill(bool state)
 void IOManager::drain(bool state)
 {
     drainState = state;
+}
+
+void IOManager::dayLight(bool currentDayState)
+{
+    dayLightState = currentDayState;
+}
+
+void IOManager::nightLight(bool currentNightState)
+{
+    nightLightState = currentNightState;
+}
+
+void IOManager::setAirpump(bool currentAirpumpState)
+{
+    airPumpStatus = currentAirpumpState;
 }

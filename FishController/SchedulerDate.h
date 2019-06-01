@@ -18,7 +18,7 @@ public:
     update();
   }
 
-  virtual void dateRun()
+  virtual void dateRun(int hour)
   {
     return;
   }

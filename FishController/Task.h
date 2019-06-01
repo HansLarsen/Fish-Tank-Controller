@@ -5,14 +5,14 @@ class Task
 {
 public:
     virtual void run() = 0;
-    virtual void dateRun();
+    virtual void dateRun(int);
 };
 
 class ButtonReturnClass : public Task
 {   
 public:
     virtual void run() = 0;
-    virtual void dateRun();
+    virtual void dateRun(int);
 
     virtual void topButton();
     virtual void changeButton();

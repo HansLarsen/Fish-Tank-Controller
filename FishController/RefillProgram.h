@@ -10,7 +10,7 @@ class RefillProgram : public ButtonReturnClass
 public:
     RefillProgram(IOManager*);
     virtual void run() override;
-    virtual void dateRun() override;
+    virtual void dateRun(int) override;
 
     virtual void topButton() override;
     virtual void changeButton() override;
