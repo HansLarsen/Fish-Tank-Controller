@@ -1,190 +1,80 @@
 #include "RefillProgram.h"
 #define SMALLFILLTIMER 1000
+//hours * min * secs * millis; to get hours to millis.
+#define MAXCHANGETIME 0.5*60*60*1000
 
-RefillProgram::RefillProgram(
-        int _drainPin, 
-        int _refillPin, 
-        int _topFloatPin, 
-        int _toppestFloatPin,
-        int _buttomFloatPin,
-        int _buttomestFloatPin,
-        int _indFillLED,
-        int _indDrainLED,
-        int _indAboveFull,
-        int _indBelowBottom,
-        int _buttonTopUp,
-        int _buttonWaterChange,
-        bool _flipButtons = false
-)
+RefillProgram::RefillProgram(IOManager* Manager)
 {
-    drainPin = _drainPin;
-    pinMode(drainPin, OUTPUT);
-    refillPin = _refillPin;
-    pinMode(refillPin, OUTPUT);
-    topFloatPin = _topFloatPin;
-    pinMode(topFloatPin, INPUT);
-    toppestFloatPin = _toppestFloatPin;
-    pinMode(toppestFloatPin, INPUT);
-    buttomFloatPin = _buttomFloatPin;
-    pinMode(buttomFloatPin, INPUT);
-    buttomestFloatPin = _buttomestFloatPin;
-    pinMode(buttomestFloatPin, INPUT);
-    indFillLED = _indFillLED;
-    pinMode(indFillLED, OUTPUT);
-    indDrainLED = _indDrainLED;
-    pinMode(indDrainLED, OUTPUT);
-    indAboveFull = _indAboveFull;
-    pinMode(indAboveFull, OUTPUT);
-    indBelowBottom = _indBelowBottom;
-    pinMode(indBelowBottom, OUTPUT);
-    buttonTopUp = _buttonTopUp;
-    pinMode(buttonTopUp, INPUT);
-    buttonWaterChange = _buttonWaterChange;
-    pinMode(buttonWaterChange, INPUT);
-    flipButtons = _flipButtons;
-
-    digitalWrite(drainPin, HIGH);
-    digitalWrite(refillPin, HIGH);
+    managerPointer = Manager;
 }
 
-void RefillProgram::run(){
-    int now = millis();
-    buttonCheckerTopUp(now);
-    buttonCheckerCycle(now);
-    emergencyChecker();
-}
-
-void RefillProgram::buttonCheckerTopUp(int time)
+void RefillProgram::run()
 {
-    bool buttonState = digitalRead(buttonTopUp);
-    if (flipButtons)
-    {
-        buttonState = !buttonState;
-    }
-
-    if (topButtonDebounce == nullptr && buttonState)
-    {
-        topButtonDebounce = new Button(time, 100);
-    }
-    else if (topButtonDebounce->canRun(time) && topButtonDebounce != nullptr && buttonState && smallFillTime == 0 && !smallFillIsActive) //Start filling
-    {
-        delete topButtonDebounce;
-        topButtonDebounce = nullptr;
-
-        smallFillTime = time;
-        smallFillIsActive = true;
-        digitalWrite(refillPin, LOW);
-        digitalWrite(indFillLED, HIGH);
-    }
-    else if (topButtonDebounce->canRun(time) && buttonState == false)
-    {
-        delete topButtonDebounce;
-        topButtonDebounce = nullptr;
-    }
-    else if (smallFillIsActive && time - smallFillTime >= SMALLFILLTIMER) //Stop filling
-    {
-        digitalWrite(refillPin, HIGH);
-        digitalWrite(indFillLED, LOW);
-        smallFillTime = 0;
-        smallFillIsActive = false;
-    }
-}
-void RefillProgram::buttonCheckerCycle(int time)
-{
-    bool buttonState = digitalRead(buttonWaterChange);
-    bool topFloatStatus = digitalRead(topFloatPin);
-    bool bottomFloatStatus = digitalRead(buttomFloatPin);
-    
-    if (flipButtons)
-    {
-        buttonState = !buttonState;
-    }
-
-    if (bottomButtonDebounce == nullptr && buttonState)
-    {
-        bottomButtonDebounce = new Button(time, 100);
-    }
-    else if (bottomButtonDebounce->canRun(time) && bottomButtonDebounce != nullptr && buttonState) //Start filling
-    {
-        delete bottomButtonDebounce;
-        bottomButtonDebounce = nullptr;
-
-
-        Serial.println("Activating Superpowers");
-        refillIsActive = true;
-    }
-    else if (bottomButtonDebounce->canRun(time) && buttonState == false)
-    {
-        delete bottomButtonDebounce;
-        bottomButtonDebounce = nullptr;
-    }
-
+    int timeNow = millis();
     if(refillIsActive)
     {
-        if (goingUp)
+        if (timeNow - refillTimer >= MAXCHANGETIME)
         {
-            if (topFloatStatus == HIGH)
-            {
-                goingUp = false;
-                refillIsActive = false;
-                digitalWrite(refillPin, HIGH);
-                digitalWrite(indFillLED, LOW);
-            }
-            else
-            {
-                digitalWrite(refillPin, LOW);
-                digitalWrite(indFillLED, HIGH);
-            }
-        }
-        else
-        {
-            if (bottomFloatStatus == HIGH)
-            {
-                digitalWrite(drainPin, LOW);
-                digitalWrite(indDrainLED, HIGH);
-            }
-            else
-            {
-                digitalWrite(drainPin, HIGH);
-                digitalWrite(indDrainLED, LOW);
-                goingUp = true;
-            }
+            Serial.println("Took to long to fill");
+            managerPointer->fill(false);
+            managerPointer->drain(false);
+            refillTimer = 0;
+            refillIsActive = false;
         }
     }
+    else if(smallFillIsActive)
+    {
+        if(timeNow - smallFillTime >= SMALLFILLTIMER)
+        {
+            smallFillIsActive = false;
+            managerPointer->fill(false);
+        }
+    }
+
 }
 
 void RefillProgram::dateRun()
 {
     refillIsActive = true;
+    managerPointer->drain(true);
+    refillTimer = millis();
 }
 
-void RefillProgram::emergencyChecker()
+void RefillProgram::topButton()
 {
-    bool topFloatStatus = digitalRead(toppestFloatPin);
-    bool bottomFloatStatus = digitalRead(buttomestFloatPin);
+    smallFillIsActive = true;
+    smallFillTime = millis();
+    managerPointer->fill(true);
+}
 
-    if (bottomFloatStatus == LOW)
+void RefillProgram::changeButton()
+{
+    refillIsActive = true;
+    managerPointer->drain(true);
+    refillTimer = millis();
+}
+
+void RefillProgram::topFloat(bool topFloatStatus)
+{
+    if(topFloatStatus == HIGH)
     {
-        digitalWrite(drainPin, HIGH);
-        digitalWrite(indDrainLED, LOW);
-        digitalWrite(indBelowBottom, HIGH);
-        Serial.println("Below buttom float");
+        smallFillIsActive = false;
+        smallFillTime = 0;
+        if (goingUp)
+        {
+            goingUp = false;
+            managerPointer->fill(false);
+            refillTimer = 0;
+        }
     }
-    else
+}
+
+void RefillProgram::bottomFloat(bool bottomFloatStatus)
+{
+    if (refillIsActive && bottomFloatStatus == LOW)
     {
-        digitalWrite(indBelowBottom, LOW);
+        goingUp = true;
+        managerPointer->fill(true);
+        managerPointer->drain(false);
     }
-    
-    if (topFloatStatus == HIGH)
-    {
-        digitalWrite(refillPin, HIGH);
-        digitalWrite(indFillLED, LOW);
-        digitalWrite(indAboveFull, HIGH);
-        Serial.println("Above top float");
-    }
-    else
-    {
-        digitalWrite(indAboveFull, LOW);
-    }
-    
 }

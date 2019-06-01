@@ -3,59 +3,31 @@
 
 #include "Arduino.h"
 #include "Task.h"
-#include "button.h"
+#include "IOManager.h"
 
-class RefillProgram : public Task
+class RefillProgram : public ButtonReturnClass
 {
 public:
-    RefillProgram(
-        int _drainPin, 
-        int _refillPin, 
-        int _topFloatPin, 
-        int _toppestFloatPin,
-        int _buttomFloatPin,
-        int _buttomestFloatPin,
-        int _indFillLED,
-        int _indDrainLED,
-        int _indAboveFull,
-        int _indBelowBottom,
-        int _buttonTopUp,
-        int _buttonWaterChange,
-        bool flipButtons = false
-    );
+    RefillProgram(IOManager*);
     virtual void run() override;
     virtual void dateRun() override;
+
+    virtual void topButton() override;
+    virtual void changeButton() override;
+
+    virtual void topFloat(bool) override;
+    virtual void bottomFloat(bool) override;
 
     bool refillIsActive = false;
     bool smallFillIsActive = false;
 
 protected:
-    void buttonCheckerTopUp(int time);
-    void buttonCheckerCycle(int time);
-    void emergencyChecker();
 
-    int drainPin;
-    int refillPin;
-    int topFloatPin;
-    int toppestFloatPin;
-    int buttomFloatPin;
-    int buttomestFloatPin;
-    int indFillLED;
-    int indDrainLED;
-    int indAboveFull;
-    int indBelowBottom;
-    int buttonTopUp;
-    int buttonWaterChange;
-    bool flipButtons;
-
-    int buttonTime = 0;
-    int buttonTime2 = 0;
-
-    Button* topButtonDebounce = nullptr;
-    Button* bottomButtonDebounce = nullptr; 
+    IOManager * managerPointer;
 
     bool goingUp = false;
     int smallFillTime = 0;
+    int refillTimer = 0;
 };
 
 #endif

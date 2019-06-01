@@ -1,8 +1,10 @@
+#include "Arduino.h"
 #include "Scheduler.h"    //Scheduler class which runs tasks
 #include "SchedulerDate.h"
 #include "Blinker.h"  //Derived from TimedTask, blinks an LED
 #include <Wire.h>
 #include "RefillProgram.h"
+#include "IOManager.h"
 
 
 Scheduler *taskManager;  // Creating a taskManager to run things at times
@@ -10,6 +12,7 @@ SchedulerDate *rtcManager;
 Blinker *blink;   // A led blinker on pin 13
 Blinker *blinker;
 RefillProgram *refillProgram;
+IOManager *inputOutput;
 
 void setup() {
   Serial.begin(9600);
@@ -22,9 +25,8 @@ void setup() {
   rtcManager = new SchedulerDate();
   blink = new Blinker(2);
   blinker = new Blinker();
-  refillProgram = new RefillProgram(26, 27, 31, 33, 32, 34, 6, 7, 8, 9, 37, 38, false); 
-  /* drainPin, refillPin, topFloatPin, toppestFloatPin,buttomFloatPin,buttomestFloatPin,indFillLED,indDrainLED,indAboveFull,indBelowBottom,
-  buttonTopUp,buttonWaterChange, flipButtons = false*/
+  inputOutput = new IOManager();
+  refillProgram = new RefillProgram(inputOutput); 
 
   taskManager->registerTask(blink, 1000); //Adds the blinker class which runs ever 2 second
   taskManager->registerTask(blinker, 1000);
