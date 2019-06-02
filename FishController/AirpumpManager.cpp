@@ -17,21 +17,18 @@ void AirpumpManager::dateRun(int hour)
             ManagerPointer->setAirPump();
         }
     #else
-        if (airPumpStatus == true)
-        {
-            if (hour > OFFTIME)
-            {
-                airPumpStatus = false;
-                ManagerPointer->setAirpump(airPumpStatus);
-            }
-        }
-        else if (airPumpStatus == false)
-        {
-            if (hour > ONTIME)
-            {
-                airPumpStatus = false;
-                ManagerPointer->setAirpump(airPumpStatus);
-            }
-        }
+
+    if (hour >= OFFTIME)
+    {
+        Serial.println("Airpump off");
+        airPumpStatus = false;
+        ManagerPointer->setAirpump(airPumpStatus);
+    }
+    else if (hour >= ONTIME)
+    {
+        Serial.println("Airpump On");
+        airPumpStatus = true;
+        ManagerPointer->setAirpump(airPumpStatus);
+    }
     #endif
 }

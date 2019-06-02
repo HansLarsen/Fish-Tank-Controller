@@ -8,17 +8,16 @@ SchedulerDate::SchedulerDate()
   RTC = new RTC_DS1307();
   RTC->begin();
 
-  if (!RTC->isrunning()) {
+  while (!RTC->isrunning()) {
     Serial.println("RTC is NOT running!");
-    RTC->adjust(DateTime(__DATE__, __TIME__));
   }
+
+  RTC->adjust(DateTime(__DATE__, __TIME__));
 
   for(int i = 0; i < STACK_SIZE; i++)
   {
     numOfTasks[i] = false;
   }
-
-
 }
 
 void SchedulerDate::update() //Runs though the tasks array and runs the onces that are on time.
@@ -28,8 +27,9 @@ void SchedulerDate::update() //Runs though the tasks array and runs the onces th
   {
     if (numOfTasks[i] == true){
 
-      if (now.hour() >= ratesHourTasks[i])
+      if (now.hour() - lastRunHour[i] >= ratesHourTasks[i])
       {
+        Serial.println("Task: " + String(i) + " Hour: " + String(now.hour()));
         if (now.day() - lastRunDate[i] >= ratesDateTasks[i])
         {
           Task * tempTask = tasks[i];
@@ -52,6 +52,8 @@ bool SchedulerDate::registerTask(Task* inputTask, uint16_t intervalRunHour, uint
     {
       numOfTasks[i] = true;
       tasks[i] = inputTask;
+
+      inputTask->dateRun(now.hour());
 
       lastRunHour[i] = now.hour();
       lastRunDate[i] = 0;

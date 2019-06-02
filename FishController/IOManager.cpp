@@ -11,6 +11,7 @@ IOManager::IOManager()
     pinMode(indBelowBottom, OUTPUT);
     pinMode(indDayLight, OUTPUT);
     pinMode(indNightLight, OUTPUT);
+    pinMode(indAirPump, OUTPUT);
 
     pinMode(buttonTopUp, INPUT);
     pinMode(buttonWaterChange, INPUT);
@@ -21,6 +22,9 @@ IOManager::IOManager()
     pinMode(toppestFloatPin, INPUT);
     pinMode(buttomFloatPin, INPUT);
     pinMode(buttomestFloatPin, INPUT);
+
+    pinMode(AirPump, OUTPUT);
+    
 }
 
 void IOManager::run()
@@ -31,23 +35,10 @@ void IOManager::run()
         toppestFloatState = !toppestFloatState;
     #endif
 
-    if (toppestFloatState == LOW)
+    if (toppestFloatState == HIGH)
     {
         Serial.println("Above High");
-        fillState = HIGH;
-        #if flipLEDS
-            digitalWrite(indAboveFull, LOW);
-        #else
-            digitalWrite(indAboveFull, HIGH);
-        #endif
-    }
-    else
-    {
-        #if flipLEDS
-            digitalWrite(indAboveFull, HIGH);
-        #else
-            digitalWrite(indAboveFull, LOW);
-        #endif
+        fillState = LOW;
     }
 
     //Bottomest Float.
@@ -59,20 +50,7 @@ void IOManager::run()
     if (bottomestFloatState == LOW)
     {
         Serial.println("Below LOW");
-        fillState = HIGH;
-        #if flipLEDS
-            digitalWrite(indBelowBottom, LOW);
-        #else
-            digitalWrite(indBelowBottom, HIGH);
-        #endif
-    }
-    else
-    {
-        #if flipLEDS
-            digitalWrite(indBelowBottom, HIGH);
-        #else
-            digitalWrite(indBelowBottom, LOW);
-        #endif
+        drainState = LOW;
     }
 
     //Reading Floats
@@ -115,13 +93,17 @@ void IOManager::run()
         digitalWrite(indFillLED, !fillState);
         digitalWrite(indDayLight, !dayLightState);
         digitalWrite(indNightLight, !nightLightState);
-        digitalWrite(indAirPump, !airPumpStatus):
+        digitalWrite(indAirPump, !airPumpStatus);
+        digitalWrite(indAboveFull, !toppestFloatState);
+        digitalWrite(indBelowBottom, bottomestFloatState);
     #else
         digitalWrite(indDrainLED, drainState);
         digitalWrite(indFillLED, fillState);
         digitalWrite(indDayLight, dayLightState);
         digitalWrite(indNightLight, nightLightState);
         digitalWrite(indAirPump, airPumpStatus);
+        digitalWrite(indAboveFull, !toppestFloatState);
+        digitalWrite(indBelowBottom, bottomestFloatState);
     #endif
 
     //Debouncing.
@@ -153,6 +135,7 @@ void IOManager::run()
         {
             if(TopUpButton)
             {
+                Serial.println("Toppingup");
                 ButtonArray[i]->topButton();
             }
             if(WaterChangeButton)
@@ -175,6 +158,7 @@ void IOManager::run()
         buttonTimer2 = 0;
         if (LightOnButton)
         {
+            Serial.println("Flipping daylight");
             dayLightState = !dayLightState;
         }
         else if (LightOffButton)
@@ -183,20 +167,11 @@ void IOManager::run()
         }
     }
 
-    //DayNightLight
-    #if flipLight
-        digitalWrite(dayLights, !dayLightState);
-        digitalWrite(nightLights, !nightLightState);
-    #else
-        digitalWrite(dayLights, dayLightState);
-        digitalWrite(nightLights, nightLightState);
-    #endif
-
     //Airpump
     #if flipAirpump
         digitalWrite(AirPump, !airPumpStatus);
     #else
-        digitalWrite(AirPump, airPumpStatus)
+        digitalWrite(AirPump, airPumpStatus);
     #endif
 }
 

@@ -7,10 +7,10 @@
 #define TaskListSize 5
 #define DebounceTime 100
 
-//Solenoids
+//Solenoids - HIGH is on.
 #define flipSolenoids true
 #define DrainPin 26
-#define RefillPin 26
+#define RefillPin 27
 
 //Level floats
 #define flipFloats false
@@ -20,7 +20,7 @@
 #define buttomestFloatPin 34
 
 //LED Indicators
-#define flipLEDS false
+#define flipLEDS true
 #define indFillLED 6
 #define indDrainLED 7 
 #define indAboveFull 8
@@ -84,8 +84,8 @@ protected:
     int ButtonArrayDepth = 0;
 
     //High off, LOW on;
-    bool fillState = HIGH;
-    bool drainState = HIGH;
+    bool fillState = LOW;
+    bool drainState = LOW;
 
     bool dayLightState = HIGH;
     bool nightLightState = LOW;

@@ -6,6 +6,7 @@
 RefillProgram::RefillProgram(IOManager* Manager)
 {
     managerPointer = Manager;
+    managerPointer->registerToInputs(this);
 }
 
 void RefillProgram::run()

@@ -3,7 +3,7 @@
 
 //Interval timer, turns the pump on and off with the interval of ONTIME.
 #define INTERVAL_TIMER false
-#define OFFTIME 4
+#define OFFTIME 24
 #define ONTIME 3
 
 #include "Arduino.h"

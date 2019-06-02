@@ -41,7 +41,7 @@ void setup() {
   taskManager->registerTask(inputOutput, 10);
   taskManager->registerTask(refillProgram, 10);
 
-  rtcManager->registerTask(refillProgram, 9, 1);
+  //rtcManager->registerTask(refillProgram, 9, 1);
   rtcManager->registerTask(LightManagerMain, 1, 0);
   rtcManager->registerTask(AirpumpManagerMain, 1, 0);
 }
