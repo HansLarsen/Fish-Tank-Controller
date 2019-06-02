@@ -23,6 +23,9 @@ IOManager::IOManager()
     pinMode(buttomFloatPin, INPUT);
     pinMode(buttomestFloatPin, INPUT);
 
+    pinMode(nightLights, OUTPUT);
+    pinMode(dayLights, OUTPUT);
+
     pinMode(AirPump, OUTPUT);
     
 }
@@ -166,6 +169,15 @@ void IOManager::run()
             nightLightState = !nightLightState;
         }
     }
+
+    //Lights
+    #if flipLight
+        digitalWrite(dayLights, !dayLightState);
+        digitalWrite(nightLights, !nightLightState);
+    #else
+        digitalWrite(dayLights, dayLightState);
+        digitalWrite(nightLights, nightLightState);
+    #endif
 
     //Airpump
     #if flipAirpump

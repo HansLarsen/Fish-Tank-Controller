@@ -42,7 +42,7 @@
 #define nightLights 25
 
 //Airpump
-#define flipAirpump false
+#define flipAirpump true
 #define AirPump 23
 
 
