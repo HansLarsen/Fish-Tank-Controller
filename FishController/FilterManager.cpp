@@ -11,6 +11,7 @@ void FilterManager::run()
     {
         IOManagerSave->setHeater(false);
         IOManagerSave->setFilter(false);
+        IOManagerSave->buzzer();
     }
     else
     {
