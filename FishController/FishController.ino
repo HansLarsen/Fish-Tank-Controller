@@ -8,6 +8,7 @@
 #include "LightManager.h"
 #include "AirpumpManager.h"
 #include "CO2.h"
+#include "FilterManager.h"
 
 
 Scheduler *taskManager;  // Creating a taskManager to run things at times
@@ -19,7 +20,7 @@ IOManager *inputOutput;
 LightManager *LightManagerMain;
 AirpumpManager *AirpumpManagerMain;
 COManager *COManagerMain;
-
+FilterManager *FilterManagerMain;
 
 void setup() {
   Serial.begin(9600);
@@ -37,12 +38,14 @@ void setup() {
   LightManagerMain = new LightManager(inputOutput);
   AirpumpManagerMain = new AirpumpManager(inputOutput);
   COManagerMain = new COManager(inputOutput);
+  FilterManagerMain = new FilterManager(inputOutput);
 
   taskManager->registerTask(blink, 1000); //Adds the blinker class which runs ever 2 second
   taskManager->registerTask(blinker, 1000);
   taskManager->registerTask(rtcManager, 5000);
   taskManager->registerTask(inputOutput, 10);
   taskManager->registerTask(refillProgram, 10);
+  taskManager->registerTask(FilterManagerMain, 500);
 
   rtcManager->registerTask(refillProgram, 9, 1); //Runs at 9, ever 1 day.
   //Time management was moved into the classes themself.

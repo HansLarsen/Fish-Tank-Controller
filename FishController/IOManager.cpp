@@ -204,6 +204,17 @@ void IOManager::run()
     #else
         digitalWrite(AirPump, airPumpStatus);
     #endif
+
+    //Checking if the buzzer needs to be turned off.
+
+    if (buzzerTimer != 0)
+    {
+        if (timeNow - buzzerTimer >= BuzzerTime)
+        {
+            digitalWrite(BuzzerPin, LOW);
+            buzzerTimer = 0;
+        }
+    }
 }
 
 void IOManager::dateRun(int)
@@ -266,4 +277,24 @@ void IOManager::setHeater(bool currentHeater)
 void IOManager::setFilter(bool currentFilter)
 {
     FilterStatus = currentFilter;
+}
+
+bool IOManager::getHeaterStatus()
+{
+    if (fillState || drainState)
+    {
+        return false;
+    }
+    if(bottomFloatStateOld == LOW)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void IOManager::buzzer()
+{
+    buzzerTimer = millis();
+    digitalWrite(BuzzerPin, HIGH);
 }

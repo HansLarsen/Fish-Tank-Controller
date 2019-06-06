@@ -6,6 +6,7 @@
 
 #define TaskListSize 5
 #define DebounceTime 100
+#define BuzzerTime 500
 
 //Solenoids - HIGH is on.
 #define flipSolenoids true
@@ -80,6 +81,10 @@ public:
     void setHeater(bool);
     void setFilter(bool);
 
+    bool getHeaterStatus();
+    void buzzer();
+    
+
     virtual void run() override;
     virtual void dateRun(int) override;
 
@@ -106,6 +111,8 @@ protected:
     bool CO2Status = LOW; //
     bool HeaterStatus = LOW; //Buzzer
     bool FilterStatus = HIGH; //
+
+    int buzzerTimer = 0;
 };
 
 #endif
