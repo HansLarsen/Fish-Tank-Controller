@@ -1,6 +1,8 @@
 #ifndef TEMPERATURESENSOR_H
 #define TEMPERATURESENSOR_H
 
+//Wrapper class for the temperature sensors.
+
 #define TEMPSENSOR_1 true
 
 #if TEMPSENSOR_1
