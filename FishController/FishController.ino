@@ -7,6 +7,7 @@
 #include "IOManager.h"
 #include "LightManager.h"
 #include "AirpumpManager.h"
+#include "CO2.h"
 
 
 Scheduler *taskManager;  // Creating a taskManager to run things at times
@@ -17,6 +18,7 @@ RefillProgram *refillProgram;
 IOManager *inputOutput;
 LightManager *LightManagerMain;
 AirpumpManager *AirpumpManagerMain;
+COManager *COManagerMain;
 
 
 void setup() {
@@ -34,6 +36,7 @@ void setup() {
   refillProgram = new RefillProgram(inputOutput);
   LightManagerMain = new LightManager(inputOutput);
   AirpumpManagerMain = new AirpumpManager(inputOutput);
+  COManagerMain = new COManager(inputOutput);
 
   taskManager->registerTask(blink, 1000); //Adds the blinker class which runs ever 2 second
   taskManager->registerTask(blinker, 1000);
@@ -41,9 +44,11 @@ void setup() {
   taskManager->registerTask(inputOutput, 10);
   taskManager->registerTask(refillProgram, 10);
 
-  //rtcManager->registerTask(refillProgram, 9, 1);
-  rtcManager->registerTask(LightManagerMain, 1, 0);
-  rtcManager->registerTask(AirpumpManagerMain, 1, 0);
+  rtcManager->registerTask(refillProgram, 9, 1); //Runs at 9, ever 1 day.
+  //Time management was moved into the classes themself.
+  rtcManager->registerTask(LightManagerMain, 1, 0); //Runs once an hour, with 0 days interval
+  rtcManager->registerTask(AirpumpManagerMain, 1, 0); //Time manageing for the Air pump.
+  rtcManager->registerTask(COManagerMain, 1, 0); //For managing the CO2.
 }
 
 void loop() {

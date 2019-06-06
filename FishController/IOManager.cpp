@@ -4,6 +4,10 @@ IOManager::IOManager()
 {
     pinMode(DrainPin, OUTPUT);
     pinMode(RefillPin, OUTPUT);
+    pinMode(CO2Pin, OUTPUT);
+    pinMode(HeaterPin, OUTPUT);
+    pinMode(FilterPin, OUTPUT);
+    pinMode(BuzzerPin, OUTPUT);
 
     pinMode(indFillLED, OUTPUT);
     pinMode(indDrainLED, OUTPUT);
@@ -12,6 +16,9 @@ IOManager::IOManager()
     pinMode(indDayLight, OUTPUT);
     pinMode(indNightLight, OUTPUT);
     pinMode(indAirPump, OUTPUT);
+    pinMode(indCO2On, OUTPUT);
+    pinMode(indHeaterOn, OUTPUT);
+    pinMode(indFliterOn, OUTPUT);
 
     pinMode(buttonTopUp, INPUT);
     pinMode(buttonWaterChange, INPUT);
@@ -85,9 +92,15 @@ void IOManager::run()
     #if flipSolenoids
         digitalWrite(DrainPin, !drainState);
         digitalWrite(RefillPin, !fillState);
+        digitalWrite(CO2Pin, !CO2Status);
+        digitalWrite(HeaterPin, !HeaterStatus);
+        digitalWrite(FilterPin, !FilterStatus);
     #else   
         digitalWrite(DrainPin, drainState);
         digitalWrite(RefillPin, fillState);
+        digitalWrite(CO2Pin, CO2Status);
+        digitalWrite(HeaterPin, HeaterStatus);
+        digitalWrite(FilterPin, FilterStatus);
     #endif
 
     //Writing LED Status.
@@ -99,6 +112,9 @@ void IOManager::run()
         digitalWrite(indAirPump, !airPumpStatus);
         digitalWrite(indAboveFull, !toppestFloatState);
         digitalWrite(indBelowBottom, bottomestFloatState);
+        digitalWrite(indCO2On, !CO2Status);
+        digitalWrite(indHeaterOn, !HeaterStatus);
+        digitalWrite(indFliterOn, !FilterStatus);
     #else
         digitalWrite(indDrainLED, drainState);
         digitalWrite(indFillLED, fillState);
@@ -107,6 +123,9 @@ void IOManager::run()
         digitalWrite(indAirPump, airPumpStatus);
         digitalWrite(indAboveFull, !toppestFloatState);
         digitalWrite(indBelowBottom, bottomestFloatState);
+        digitalWrite(indCO2On, CO2Status);
+        digitalWrite(indHeaterOn, HeaterStatus);
+        digitalWrite(indFliterOn, FilterStatus);
     #endif
 
     //Debouncing.
@@ -232,4 +251,19 @@ void IOManager::setAirpump()
 void IOManager::setAirpump(bool currentAirpumpState)
 {
     airPumpStatus = currentAirpumpState;
+}
+
+void IOManager::setCO(bool currentCOStatus)
+{
+    CO2Status = currentCOStatus;
+}
+
+void IOManager::setHeater(bool currentHeater)
+{
+    HeaterStatus = currentHeater;
+}
+
+void IOManager::setFilter(bool currentFilter)
+{
+    FilterStatus = currentFilter;
 }

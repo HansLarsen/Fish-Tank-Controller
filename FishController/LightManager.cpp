@@ -13,7 +13,7 @@ void LightManager::run()
 void LightManager::dateRun(int currentHour)
 {
     Serial.println("Light manager: " + String(currentHour));
-    if (currentHour >= DAYOFFTIME)
+    if (currentHour == DAYOFFTIME)
     {
         if (dayLightStatus == HIGH)
         {
@@ -22,7 +22,7 @@ void LightManager::dateRun(int currentHour)
             dayLightStatus = LOW;
         }
     }
-    else if (currentHour >= DAYONTIME)
+    else if (currentHour == DAYONTIME)
     {
         if (dayLightStatus == LOW)
         {
@@ -32,7 +32,7 @@ void LightManager::dateRun(int currentHour)
         }
     }
 
-    if (currentHour >= NIGHTONTIME)
+    if (currentHour == NIGHTONTIME)
     {
         if (nightLightStatus == LOW)
         {
@@ -41,7 +41,7 @@ void LightManager::dateRun(int currentHour)
             nightLightStatus = HIGH;
         }
     }
-    else if (currentHour >= NIGHTOFFTIME)
+    else if (currentHour == NIGHTOFFTIME)
     {
         if (nightLightStatus == HIGH)
         {

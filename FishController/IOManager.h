@@ -11,6 +11,10 @@
 #define flipSolenoids true
 #define DrainPin 26
 #define RefillPin 27
+#define CO2Pin 28 
+#define HeaterPin 29 
+#define FilterPin 30 
+#define BuzzerPin 36 
 
 //Level floats
 #define flipFloats false
@@ -28,6 +32,9 @@
 #define indDayLight 4
 #define indNightLight 5
 #define indAirPump 3
+#define indCO2On 10 
+#define indHeaterOn 11 
+#define indFliterOn 12 
 
 //Buttons
 #define flipButtons true
@@ -69,6 +76,10 @@ public:
     void setAirpump();
     void setAirpump(bool);
 
+    void setCO(bool);
+    void setHeater(bool);
+    void setFilter(bool);
+
     virtual void run() override;
     virtual void dateRun(int) override;
 
@@ -83,7 +94,7 @@ protected:
     funPoint ButtonArray[TaskListSize];
     int ButtonArrayDepth = 0;
 
-    //High off, LOW on;
+    //High on, LOW off;
     bool fillState = LOW;
     bool drainState = LOW;
 
@@ -91,6 +102,10 @@ protected:
     bool nightLightState = LOW;
 
     bool airPumpStatus = HIGH;
+
+    bool CO2Status = LOW; //
+    bool HeaterStatus = LOW; //Buzzer
+    bool FilterStatus = HIGH; //
 };
 
 #endif
