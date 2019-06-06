@@ -8,7 +8,7 @@
 #if TEMPSENSOR_1
     #include "OneWire.h"
     #include <DallasTemperature.h>
-    #define ONE_WIRE_BUS 50
+    #define ONE_WIRE_BUS 41
 #endif
 
 class TempSensor
